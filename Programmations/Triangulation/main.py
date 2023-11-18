@@ -26,6 +26,7 @@ gamma = 0
 
 # Fonction
 def get_position(alpha, beta, gamma):
+    # si possible, une résolution matricielle serait plus élégante et plus facile à réutiliser
     position = (0, 0)
     return position
 
