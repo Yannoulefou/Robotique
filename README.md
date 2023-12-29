@@ -6,6 +6,13 @@ Farming Mars
 https://www.coupederobotique.fr/inscriptions-coupe-de-france-de-robotique-2024/  
 https://www.eurobot.org/eurobot-contest/eurobot-2024/  
 
+## Liens intéressants
+https://github.com/VRAC-team/la-maxi-liste-ressources-eurobot  
+https://github.com/LesKaribous   
+https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/  
+
+
+
 ## Participants
 ### Conception Robot
  - Fanny DAUBET
@@ -18,7 +25,7 @@ https://www.eurobot.org/eurobot-contest/eurobot-2024/
  - Thomas ROUSSAUX
 
 ### Triangulation 
- - Victorien Marette ?
+ - Victorien Marette  
 
 ### Caméra et computer Vision
  - Dasha HARYFULLINA ?
@@ -54,12 +61,12 @@ https://www.eurobot.org/eurobot-contest/eurobot-2024/
 ## Février 
  - Commencer à intégrer la triangulation
  - Fabriquer les coccinelles
- - 10 février 2024 🏆 Rencontre Junior Auvergne-Rhône-Alpes (espionner ?)
+ - 10 février 2024 🏆 Rencontre Junior Auvergne-Rhône-Alpes 
 
 ## Mars
  - Commencer à intégrer les manoeuvres d'évitemment de l'adversaire
  - Commencer à intégrer une position plus précise par filtre de Kalman
- - 2 mars 2024 🏆 Rencontre Junior Ile-de-France (espionner ?)
+ - 2 mars 2024 🏆 Rencontre Junior Ile-de-France 
 
 ## Avril 
  - 11 avril 2024 🏆 Eurobot Royaume-Uni 🇬🇧
