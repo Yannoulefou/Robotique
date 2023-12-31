@@ -15,6 +15,7 @@ img = cv.imread('photo3.png')
 # img = cv.imread('photo8.jpg')
 # img = cv.imread('photo9.jpg')
 # img = cv.imread('photo10.jpg')
+# img = cv.imread('vinyle_table_2024_FINAL_V1.jpg')
 
 # Defining lists
 centres = []
