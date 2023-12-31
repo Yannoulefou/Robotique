@@ -10,6 +10,8 @@ https://www.eurobot.org/eurobot-contest/eurobot-2024/
 https://github.com/VRAC-team/la-maxi-liste-ressources-eurobot  
 https://github.com/LesKaribous   
 https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/  
+https://git.poivron-robotique.fr/Keuronde/Meca2024/src/branch/master   
+https://mryslab.github.io/telemetrix/  
 
 
 
