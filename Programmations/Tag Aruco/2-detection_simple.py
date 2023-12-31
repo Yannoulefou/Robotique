@@ -3,8 +3,18 @@ from cv2 import aruco
 import numpy as np
 
 # Reading image
-img = cv.imread('plantes.jpg')
-img = cv.imread('panneaux.jpg')
+# img = cv.imread('plantes.jpg')
+# img = cv.imread('panneaux.jpg')
+# img = cv.imread('photo.jpg')
+# img = cv.imread('photo2.jpg')
+img = cv.imread('photo3.png')
+# img = cv.imread('photo4.jpg')
+# img = cv.imread('photo5.jpg')
+# img = cv.imread('photo6.jpg')
+# img = cv.imread('photo7.jpg')
+# img = cv.imread('photo8.jpg')
+# img = cv.imread('photo9.jpg')
+# img = cv.imread('photo10.jpg')
 
 # Defining lists
 centres = []
