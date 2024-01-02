@@ -1,0 +1,37 @@
+# Roue mecanum
+
+Tbest Roue Omnidirectionnelle Mecan, Roue Omnidirectionnelle Mecanum en Alliage d'Aluminium de Robot RC avec Ecrous Dorés  
+https://www.amazon.fr/Tbest-Omnidirectionnelle-Mecanum-Alliage-dAluminium/dp/B07YQJPFKW
+
+Dimensions du produit (L x l x h) 	‎6 x 6 x 2,4 cm; 230 grammes 
+
+Spécification:  
+Condition: 100% tout neuf  
+Type d'élément: Accessoire RC  
+Matériau de la surface: alliage d'aluminium  
+Couleur: comme sur les images  
+Diamètre de roue: env.60mm/2.4in  
+Modèle: 60mm  
+Connecteur: env.12mm  
+Roulement: 15 kg  
+Épaisseur de roue: env.24mm  
+Diamètre de l'essieu de la roue d'appui: env.4 mm  
+Numéro de la roue de soutien: 10   
+
+
+# Moteur NEMA
+
+NEMA is an acronym for the National Electrical Manufacturers Association.  
+NEMA 14 signifie que la face de devant fait 1.4*1.4 pouce = 3.5*3.5cm  
+NEMA 17 signifie que la face de devant fait 1.7*1.7 pouce = 4.2*4.2cm  
+La vitesse et le couple dépend donc de la longueur du moteur et de la puissance électrique acceptée.  
+
+Différentes références de moteur NEMA :  
+https://www.pololu.com/category/87/stepper-motors  
+
+Exemple de NEMA 17
+https://www.lextronic.fr/moteur-pas-a-pas-nema17-03-64826.html  
+
+# Moteur à encoder
+333 rpm et 0.35 Nm  
+https://www.lextronic.fr/motoreducteur-e52037gm-120333-76706.html  
