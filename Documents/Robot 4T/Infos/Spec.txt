@@ -1,4 +1,4 @@
-# Roue mecanum
+   # Roue mecanum
 
 Tbest Roue Omnidirectionnelle Mecan, Roue Omnidirectionnelle Mecanum en Alliage d'Aluminium de Robot RC avec Ecrous Dorés  
 https://www.amazon.fr/Tbest-Omnidirectionnelle-Mecanum-Alliage-dAluminium/dp/B07YQJPFKW
@@ -32,6 +32,57 @@ https://www.pololu.com/category/87/stepper-motors
 Exemple de NEMA 17
 https://www.lextronic.fr/moteur-pas-a-pas-nema17-03-64826.html  
 
+Sur omc-stepperonline.com   
+Nema 23 série E bipolaire 1.8deg 1.26Nm 2.8A 57x57x56mm 4 fils €10.51    
+Nema 17 Bipolaire 42Ncm  1.5A 42x42x38mm 4 Fils  €4.63  
+Nema 17 Bipolaire 45Ncm 2A 42x42x40mm 4 Fils €7.69  
+Nema 17 Bipolaire 59Ncm 2A 42x48mm 4 Fils €9.43   
+
+
+
+
 # Moteur à encoder
 333 rpm et 0.35 Nm  
 https://www.lextronic.fr/motoreducteur-e52037gm-120333-76706.html  
+
+
+# Batterie
+[Comment alimenter la Raspberry](https://www.magdiblog.fr/divers/comment-alimenter-votre-raspberry-pi-avec-une-batterie/)  
+Lipo : best mais dangeureuse lors de la charge  
+Li ion : comme téléphone mais un peu chère  
+Nimh (aka pile rechargeable) : Ok mais perd de puissance au cours de l'utilisation  
+
+
+## melasta Li-ION Batterie Externe 5200mAh 12V/5A/DC 9V/1.5A/DC 5V/2A USB  
+46,99€  
+https://www.amazon.fr/Batterie-Portable-Compatible-Smartphone-Surveillance/dp/B0BRRR3C41/ref=mp_s_a_1_33?crid=10E7BQVIKAAJR&keywords=Batterie+Li+Ion+5V&qid=1704375784&sprefix=batterie+li+ion+5v%2Caps%2C155&sr=8-33  
+Power Bank Chargeur Portable avec Chargeur avec 3 Ports Sortie et 1 Entrées
+Avec buton power off  
+
+
+## Batterie Externe Power Bank 6000mAh 14.6V/5A/DC 9V/1.5A/DC 5V/2A USB   LiFePO4 
+64,99€
+https://www.amazon.fr/Batterie-Powerbank-Compatible-Smartphone-Surveillance/dp/B0BRTK7ZSD?ref_=ast_sto_dp  
+Batterie Portable avec Chargeur avec 3 Ports USB Sortie et 1 Entrées  
+Avec buton power off  
+
+## Charmast 20000mAh 100W PD Batterie Externe Ordinateur Portable en USB C Batterie Portable Power Bank Quick Charge 3.0 
+52,99€  
+https://www.amazon.fr/Charmast-Ordinateur-Compatible-T%C3%A9l%C3%A9phone-Tablettes/dp/B0C1N9D7S9/ref=sr_1_2?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1DOZK3HT31YBJ&keywords=power+bank+20v+power+off&qid=1704377457&refinements=p_36%3A-10500&rnid=389179011&sprefix=power+bank+20v+power+off%2Caps%2C114&sr=8-2
+100W = 5A * 20V ?  
+Avec buton power off  
+
+## Power Bank 20000mah,PD 100 W,Power Bank 5A à Charge Rapide,Ports D'EntréE et de Sortie USB C,BoîTier Translucide,Affichage NuméRique
+49.99€
+https://www.amazon.fr/20000mah-DEntr%C3%A9E-Translucide-Affichage-Num%C3%A9Rique/dp/B0CG1FRC19/ref=sr_1_3?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3VLPV4APDGMJ9&keywords=power+bank+100W+power+off+button&qid=1704377912&sprefix=power+bank+100w+power+off+button%2Caps%2C96&sr=8-3
+
+## USB Cable Y Splitter USB 2.0 Power Enhancer Hub Adapter Data Charger Cable Extension Code Type a 30cm (1 Female to 2 Male)    
+7.99€
+https://www.amazon.com/Splitter-Enhancer-Adapter-Charger-Extension/dp/B072LLMKJF/ref=sr_1_4?keywords=usb+power+enhancer&qid=1704378469&sr=8-4
+
+
+## USB 3.0 Hub, VIENON 4-Port USB Hub USB Splitter USB Expander for Laptop, Xbox, Flash Drive, HDD, Console, Printer, Camera,Keyborad, Mouse 
+7.99€
+https://www.amazon.com/Extender-Splitter-MacBook-Chromebook-Pixelbook/dp/B09MLRPTT2/ref=sr_1_3?crid=3MXNDRGYS3MD7&keywords=usb%2Bhub&qid=1704378631&sprefix=usb%2Bhu%2Caps%2C243&sr=8-3&th=1
+
+
