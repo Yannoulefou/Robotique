@@ -68,7 +68,7 @@ def running_callback(data):
         print('The motor IS NOT running.')
 
 
-def step_absolute(the_board):
+def step_absolute(the_board):   
 
     global exit_flag
     # create an accelstepper instance for a TB6600 motor drive

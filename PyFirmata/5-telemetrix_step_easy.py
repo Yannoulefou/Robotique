@@ -25,13 +25,16 @@ def running_callback(data):
 
 def step_absolute(the_board):
     global exit_flag
-    motor = the_board.set_pin_mode_stepper(interface=4, pin1=8, pin2=9, pin3=10, pin4=11)
+    motor_g = the_board.set_pin_mode_stepper(interface=4, pin1=8, pin2=9, pin3=10, pin4=11)
+    motor_d = the_board.set_pin_mode_stepper(interface=4, pin1=4, pin2=5, pin3=6 , pin4=7 )
     time.sleep(.5)
 
     # set the max speed and acceleration
     the_board.stepper_set_current_position(0, 0)
-    the_board.stepper_set_max_speed(motor, 400)
-    the_board.stepper_set_acceleration(motor, 800)
+    the_board.stepper_set_max_speed(motor_g, 700)
+    the_board.stepper_set_acceleration(motor_g, 1000)
+    the_board.stepper_set_max_speed(motor_d, 700)
+    the_board.stepper_set_acceleration(motor_d, 1000)
 
 
 
@@ -39,13 +42,18 @@ def step_absolute(the_board):
     while True:
         try:
             # set the absolute position in steps
-            the_board.stepper_move_to(motor, int(input('Enter a position in steps: ')))
+            # the_board.stepper_move_to(motor, int(input('Enter a position in steps: ')))
+            val = int(input('Enter a position in steps: '))
+            the_board.stepper_move(motor_g, val)
+            the_board.stepper_move(motor_d, val)
 
             # run the motor
             print('Starting motor...')
-            the_board.stepper_run(motor, completion_callback=the_callback)
+            the_board.stepper_run(motor_g, completion_callback=the_callback)
+            the_board.stepper_run(motor_d, completion_callback=the_callback)
             time.sleep(.2)
-            the_board.stepper_is_running(motor, callback=running_callback)
+            the_board.stepper_is_running(motor_g, callback=running_callback)
+            the_board.stepper_is_running(motor_d, callback=running_callback)
             time.sleep(.2)
         except KeyboardInterrupt:
             the_board.shutdown()
