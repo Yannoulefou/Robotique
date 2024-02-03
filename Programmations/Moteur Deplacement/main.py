@@ -1,6 +1,6 @@
 from BaseDiff import BaseDiff, BaseDiffCalcul
 
-base_diff = BaseDiff()
+base_diff = BaseDiffCalcul(x=225, y=225, angle=0)
 
 # Ceci est un exemple de liste d'actions à effectuer pour le robot
 liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, arguments)
