@@ -10,8 +10,8 @@ class BaseDiffCalcul:
     """
 
     RAYON = 100 # Rayon de la roue en mm
-    LARGEUR = 200 # Largeur de l'essieu en mm
-    LONGUEUR = 300 # Longueur du robot en mm
+    LARGEUR = 350 # Largeur de l'essieu en mm
+    LONGUEUR = 250 # Longueur du robot en mm
 
     LARGEUR_PLATEAU = 2000 # Largeur du plateau en mm
     LONGUEUR_PLATEAU = 3000 # Longueur du plateau en mm
