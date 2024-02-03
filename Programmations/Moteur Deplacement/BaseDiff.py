@@ -8,7 +8,7 @@ class BaseDiffCalcul:
     elle sert également à définir les constantes du robot
     et à effectuer des simulations en l'absence de la carte Arduino
     """
-
+ 
     RAYON = 100 # Rayon de la roue en mm
     LARGEUR = 350 # Largeur de l'essieu en mm
     LONGUEUR = 250 # Longueur du robot en mm
@@ -21,7 +21,7 @@ class BaseDiffCalcul:
     def __init__(self, x=0, y=0, angle=0):
         self.x = x # Position en x
         self.y = y # Position en y
-        self.angle = angle # Angle du robot (en degrés ou radians ? à toi de voir Yassine)
+        self.angle = angle # Angle du robot (en radians, car les fonctions trigo prennent des radians sur numpy)
 
     def calculer_position(self, vitesseG, vitesseD, pasG, pasD):
         """
@@ -34,6 +34,23 @@ class BaseDiffCalcul:
         # Calcul de la distance parcourue par chaque roue en mm
         distanceG = pasG * (self.RAYON * 2 * math.pi) / self.STEPS
         distanceD = pasD * (self.RAYON * 2 * math.pi) / self.STEPS
+        
+        # Calcul de la différence de distances des roues
+        delta_D = distanceD - distanceG
+
+        # Changement d'angle en utilisant arcsin
+        delta_theta = math.asin(delta_D / self.LARGEUR) #(trigonométrie)
+        self.angle += delta_theta   
+
+       # Calcul des déplacements en x et y du robot en utilisant pasG et pasD
+        delta_x = (distanceG + distanceD) / 2 * math.cos(self.angle)
+        delta_y = (distanceG + distanceD) / 2 * math.sin(self.angle)
+
+        # Mise à jour de la position du robot
+        self.x += delta_x
+        self.y += delta_y
+
+                
 
     def move(self, vitesseG, vitesseD, pasG, pasD):
         """
