@@ -45,6 +45,7 @@ class BaseDiffCalcul:
         delta_D = arcD + arcG
 
         # Changement d'angle en utilisant arcsin
+        print(delta_D, self.LARGEUR, delta_D / self.LARGEUR)
         delta_theta = math.asin(delta_D / self.LARGEUR) #(trigonométrie)
         self.angle += delta_theta   
 
