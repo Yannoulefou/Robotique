@@ -32,17 +32,17 @@ class BaseDiffCalcul:
         pasD : nombre de pas de la roue droite à effectuer
         """
         # Calcul de la distance parcourue par chaque roue en mm
-        arcG = pasG * (self.RAYON * 2 * math.pi) / self.STEPS
+        arcG = -pasG * (self.RAYON * 2 * math.pi) / self.STEPS
         arcD = pasD * (self.RAYON * 2 * math.pi) / self.STEPS
 
         if arcG==arcD:
             distanceG,distanceD=arcG,arcD
         else:
-            distanceG=2*self.LARGEUR*math.sin(arcG/self.LARGEUR)
-            distanceD=2*self.LARGEUR*math.sin(arcD/self.LARGEUR)
+            distanceG=2*self.LARGEUR*math.sin(arcG/(2*self.LARGEUR))
+            distanceD=2*self.LARGEUR*math.sin(arcD/(2*self.LARGEUR))
 
         # Calcul de la différence de distances des roues
-        delta_D = distanceD - distanceG
+        delta_D = arcD + arcG
 
         # Changement d'angle en utilisant arcsin
         delta_theta = math.asin(delta_D / self.LARGEUR) #(trigonométrie)
