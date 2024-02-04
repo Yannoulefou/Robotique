@@ -1,6 +1,18 @@
 from BaseDiff import BaseDiff, BaseDiffCalcul
 
-base_diff = BaseDiffCalcul(x=225, y=225, angle=0)
+# Simulation ou connecté à une Arduino
+is_simulation = True
+
+if is_simulation:
+    base_diff = BaseDiffCalcul(x=225, y=225, angle=0)
+else:
+    import sys
+    import time
+
+    from telemetrix import telemetrix
+
+    board = telemetrix.Telemetrix()
+    base_diff = BaseDiff(board=board, x=225, y=225, angle=0, pinsG=[4, 5, 6, 7], pinsD=[8, 9, 10, 11])
 
 # Ceci est un exemple de liste d'actions à effectuer pour le robot
 liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, arguments)
@@ -31,3 +43,6 @@ for fonction, kwargs in liste_actions:
 # Résultats
 print("Robot arrivé à destination ! :)")
 print(f"Il a pour position {base_diff.x}, {base_diff.y} et pour angle {base_diff.angle}.")
+
+if not is_simulation:
+    board.shutdown() # On éteint la carte Arduino
