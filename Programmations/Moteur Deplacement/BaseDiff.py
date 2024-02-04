@@ -32,9 +32,15 @@ class BaseDiffCalcul:
         pasD : nombre de pas de la roue droite à effectuer
         """
         # Calcul de la distance parcourue par chaque roue en mm
-        distanceG = pasG * (self.RAYON * 2 * math.pi) / self.STEPS
-        distanceD = pasD * (self.RAYON * 2 * math.pi) / self.STEPS
-        
+        arcG = pasG * (self.RAYON * 2 * math.pi) / self.STEPS
+        arcD = pasD * (self.RAYON * 2 * math.pi) / self.STEPS
+
+        if arcG==arcD:
+            distanceG,distanceD=arcG,arcD
+        else:
+            distanceG=2*self.LARGEUR*math.sin(arcG/self.LARGEUR)
+            distanceD=2*self.LARGEUR*math.sin(arcD/self.LARGEUR)
+
         # Calcul de la différence de distances des roues
         delta_D = distanceD - distanceG
 
