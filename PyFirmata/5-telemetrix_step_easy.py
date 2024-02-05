@@ -31,9 +31,9 @@ def step_absolute(the_board):
 
     # set the max speed and acceleration
     the_board.stepper_set_current_position(0, 0)
-    the_board.stepper_set_max_speed(motor_g, 700)
+    the_board.stepper_set_max_speed(motor_g, 1000)
     the_board.stepper_set_acceleration(motor_g, 1000)
-    the_board.stepper_set_max_speed(motor_d, 700)
+    the_board.stepper_set_max_speed(motor_d, 1000)
     the_board.stepper_set_acceleration(motor_d, 1000)
 
 

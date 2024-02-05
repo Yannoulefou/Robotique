@@ -1,5 +1,6 @@
 # import telemetrix
 import math
+import time
 
 class BaseDiffCalcul:
     """
@@ -81,8 +82,8 @@ class BaseDiff(BaseDiffCalcul):
         self.board = board # La carte Arduino
 
         # On définit les pins pour les moteurs
-        self.motorG = self.board.set_pin_mode_stepper(interface=4, *pinsG)
-        self.motorD = self.board.set_pin_mode_stepper(interface=4, *pinsD)
+        self.motorG = self.board.set_pin_mode_stepper(4, *pinsG)
+        self.motorD = self.board.set_pin_mode_stepper(4, *pinsD)
         self.board.stepper_set_acceleration(self.motorG, 1000)
         self.board.stepper_set_acceleration(self.motorD, 1000)
 
@@ -99,16 +100,21 @@ class BaseDiff(BaseDiffCalcul):
         self.board.stepper_set_max_speed(self.motorD, vitesseD)
 
         # On envoie les instructions à la carte Arduino
+        done = 0
+        def incr_done(x):
+            nonlocal done
+            done += 1
         self.board.stepper_move(self.motorG, pasG)
         self.board.stepper_move(self.motorD, pasD)
-        self.board.stepper_run(self.motorG)
-        self.board.stepper_run(self.motorD)
+        self.board.stepper_run(self.motorG, completion_callback=incr_done)
+        self.board.stepper_run(self.motorD, completion_callback=incr_done)
 
         # On attend que les moteurs aient fini de bouger
-        while self.board.stepper_is_running(self.motorG) or self.board.stepper_is_running(self.motorD):
-            pass
+        while done < 2:
+            print(done)
+            time.sleep(1)
 
         # On met à jour la position du robot
-        self.calculer_position(vitesseG, vitesseD, pasG, pasD)
+        # self.calculer_position(vitesseG, vitesseD, pasG, pasD)
 
 
