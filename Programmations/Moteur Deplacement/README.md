@@ -17,3 +17,8 @@ En tout cas, merci beaucoup pour ton aide Yassine, j'espère que ça va te plair
 
 
 Tien-Thinh
+
+# Ressources intéressantes
+https://classes.engineering.wustl.edu/cse550/a01.php  
+https://atsushisakai.github.io/PythonRobotics/modules/control/move_to_a_pose_control/move_to_a_pose_control.html  
+https://github.com/VRAC-team/la-maxi-liste-ressources-eurobot?tab=readme-ov-file#210-planificateur-de-trajectoire-et-%C3%A9vitement  
