@@ -50,28 +50,18 @@ def lecture_gyro():
 
 lecture_gyro()
 
-# Fonction pour calculer l'angle de rotation en degrés
-def calculer_angle_rotation(ax, ay, az, gx, gy, gz):
-    # Convertir les valeurs d'accélération en angles
-    angle_acc = math.atan2(ay, az)
 
-    # Calculer l'angle de rotation en fonction des valeurs du gyroscope
-    dt = 0.01  # Temps écoulé depuis la dernière lecture (en secondes)
-    angle_gyro = (gx * dt)  # En supposant que la vitesse angulaire est constante sur une petite période
-
-    # Combiner les deux angles en prenant une moyenne pondérée
-    alpha = 0.98  # Facteur d'interpolation
-    angle = alpha * (angle_gyro) + (1 - alpha) * (angle_acc)
-
-    return angle
-
-# Fonction pour calculer la position du robot en fonction de l'angle de rotation autour des axes x et y
-def calculer_position(angle, x_prev, y_prev):
-    # Supposons que le robot se déplace uniquement selon l'axe x
-    distance = 0.1  # Distance parcourue depuis la dernière lecture (en mètres)
-    x = x_prev + distance * math.cos(math.radians(angle))
-    y = y_prev + distance * math.sin(math.radians(angle))
-    return x, y
+# Fonction pour calculer la position du robot avec les données du gyroscope
+def calculer_position(angle_prec, x_prec, y_prec, ax, ay, az, gx, gy, gz, dt=0.01):
+    dx = ax*(dt**2)     # calculer la valeur de x dans le repère du gyroscope
+    dy = ay*(dt**2)     # calculer la valeur de y dans le repère du gyroscope
+    alpha = 0.49        # facteur d'interpolation, qui donne plus de poids au gyroscope qu'à l'accéléromètre
+    rotation = alpha*gx*dt + alpha*((math.pi/2)*gy*dt) + (1-2*alpha)*(math.atan(dy/dx))        # calculer la rotation du robot dans le repère du gyroscope par une moyenne pondérée des différentes méthodes possibles
+    distance = 0.5*(dx/math.cos(math.radians(rotation))) + 0.5*(dy/math.sin(math.radians(rotation))) # calculer la distance parcourue par le robot
+    angle = angle_prec + rotation - (math.pi/2)     # calculer l'angle du robot dans le repère global
+    x = x_prec + distance * math.cos(math.radians(angle))       # calculer la valeur de x dans le repère global
+    y = y_prec + distance * math.sin(math.radians(angle))       # calculer la valeur de y dans le repère global
+    return x, y, angle
 
 
 v = 600
