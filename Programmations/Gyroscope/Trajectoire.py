@@ -71,7 +71,7 @@ def obtenir_position():
 # Fonction qui calcule un angle au cours d'une rotation (et pas un angle par rapport au repère global)
 def calculer_angle(gx, dt) :
         angle = 0
-        while gx > 0.1 : # tant que le robot tourne, on incrémente la valeur de l'angle
+        while abs(gx) > 0.1 : # tant que le robot tourne, on incrémente la valeur de l'angle
             angle+= gx*dt
             time.sleep(dt)
             gx = lecture_gyro[3]
