@@ -10,7 +10,7 @@ class BaseDiffCalcul:
     et à effectuer des simulations en l'absence de la carte Arduino
     """
  
-    RAYON = 100 # Rayon de la roue en mm
+    RAYON = 750 # Rayon de la roue en mm
     LARGEUR = 350 # Largeur de l'essieu en mm
     LONGUEUR = 250 # Longueur du robot en mm
 
@@ -71,6 +71,29 @@ class BaseDiffCalcul:
         self.calculer_position(vitesseG, vitesseD, pasG, pasD)
 
 
+    def move_to_position(self, x_actuel, y_actuel, x_voulu, y_voulu):
+        """
+        Calculer le nombre de pas nécessaire pour que le robot aille d'une position (x,y) actuelle
+        à une position (x,y) souhaitée
+        On procède en 2 étapes : calcul des pas de chaque moteur pour que le robot s'oriente dans la bonne direction,
+        puis calcul des pas de chaque moteur pour qu'il avance jusqu'aux positions voulues.
+        """
+        # Calculer la distance et l'angle entre les positions actuelles et souhaitées
+        dx = x_voulu - x_actuel
+        dy = y_voulu - y_actuel
+        distance = math.sqrt(dx**2 + dy**2)
+        angle = math.atan2(dy, dx)  # Calcul de l'angle en radians
+
+        # Calculer la rotation nécessaire pour orienter le robot vers la position souhaitée
+        pas_tourner = angle * 550 / (2 * math.pi)  # 550 : tâtonné
+
+        # Convertir la distance en pas pour chaque roue
+        pas_avancer = (distance * self.STEPS) / (2 * math.pi * self.RAYON)
+
+        # Renvoyer les valeurs de pas pour la rotation et pour la ligne droite
+        return pas_tourner, pas_avancer
+
+
 class BaseDiff(BaseDiffCalcul):
     """
     Classe de hérité de BaseDiffCalcul
@@ -115,6 +138,13 @@ class BaseDiff(BaseDiffCalcul):
             time.sleep(1)
 
         # On met à jour la position du robot
-        # self.calculer_position(vitesseG, vitesseD, pasG, pasD)
+        BaseDiffCalcul.calculer_position(vitesseG, vitesseD, pasG, pasD)
 
-
+    def ajuster_position(self, vitesseG, vitesseD, position_réelle) :
+        """
+        Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle
+        """
+        if self.x - position_réelle[0] > 30 or self.y - position_réelle[1] > 30 :
+            pas_tourner, pas_avancer = BaseDiffCalcul.move_to_position(position_réelle[0], position_réelle[1], BaseDiffCalcul.x, Base.y)
+            self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
+            self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
