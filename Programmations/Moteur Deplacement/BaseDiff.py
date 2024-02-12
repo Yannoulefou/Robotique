@@ -142,9 +142,20 @@ class BaseDiff(BaseDiffCalcul):
 
     def ajuster_position(self, vitesseG, vitesseD, position_réelle) :
         """
-        Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle
+        Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle = (x, y, angle)
+        Attention : les données sont très fausses pour le moment
         """
-        if self.x - position_réelle[0] > 30 or self.y - position_réelle[1] > 30 :
+        if BaseDiffCalcul.x - position_réelle[0] > 30 or BaseDiffCalcul.y - position_réelle[1] > 30 or position_réelle[2] > 0.2 :
             pas_tourner, pas_avancer = BaseDiffCalcul.move_to_position(position_réelle[0], position_réelle[1], BaseDiffCalcul.x, Base.y)
             self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
             self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
+
+    def ajuster_angle(self, vitesseG, vitesseD, pasG, pasD, angle_réel) :
+        """
+        Après une rotation, le robot corrige sa direction grâce aux données du gyroscope reçues dans angle_réel
+        """
+        angle_voulu = (2*math.pi*pasD)/550  # pasG = 550 et pasD = -550 : pas pour tourner de 360° (tâtonné)
+        erreur = angle_voulu - angle_réel
+        if abs(erreur) > 0.2 :  # 0.2 est arbitraire, à calibrer
+            pas_corr_D = erreur * 550 / (2*math.pi)
+            self.move(vitesseG, vitesseD, -pas_corr_D, pas_corr_D)
