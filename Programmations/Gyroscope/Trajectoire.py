@@ -35,18 +35,16 @@ def lire_gyro():
 
 
 
-# Fonction pour calculer la position du robot avec les données du gyroscope
-def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=0.01):
-    x_gyro = ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
-    y_gyro = ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
-    alpha = 0.49        # facteur d'interpolation, qui donne plus de poids au gyroscope qu'à l'accéléromètre
-    angle_gyro = alpha*(math.pi/2+gx*dt) + alpha*(math.pi/2+gy*dt) + (1-2*alpha)*(math.atan(y_gyro/x_gyro))        # calculer l'angle du robot dans le repère du gyroscope par une moyenne pondérée des différentes méthodes possibles
-    distance = (x_gyro**2 + y_gyro**2)**0.5  # calculer la distance parcourue par le robot
-    new_angle = round(angle_prec + angle_gyro - (math.pi/2), 2)     # calculer l'angle du robot dans le repère global
-    new_x = round(x_prec + distance * math.cos(angle))       # calculer la valeur de x dans le repère global
-    new_y = round(y_prec + distance * math.sin(angle))       # calculer la valeur de y dans le repère global
+# Fonction pour calculer la position et la direction du robot avec les données du gyroscope
+def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=1):
+    x_gyro = 0.5*ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
+    y_gyro = 0.5*ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
+    rotation = gz*dt     # calculer la rotation du robot en radians
+    new_angle = angle_prec + rotation    # calculer la direction robot dans le repère global
+    new_x = x_prec + (x_gyro*math.cos(rotation) - y_gyro*math.sin(rotation))   # calculer la valeur de x dans le repère global
+    new_y = y_prec + (x_gyro*math.sin(rotation) + y_gyro*math.cos(rotation))   # calculer la valeur de y dans le repère global
+    print(new_x, new_y, new_angle)
     return new_x, new_y, new_angle
-
 
 # Fonction qui met à jour la position du robot au fil du temps dans le repère global avec les données du gyroscope
 def start_position() :

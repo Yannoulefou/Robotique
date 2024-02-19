@@ -1,11 +1,11 @@
 import serial
 import time
 import math
-
+"""
 # Configuration du port série
 ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série approprié
-ser.timeout = 1  # Définir le délai de lecture du port série
-
+ser.timeout = 0.1  # Définir le délai de lecture du port série
+"""
 def lecture_gyro():
     # Lire une ligne de données sérialisées depuis Arduino
     line = ser.readline().decode()
@@ -23,31 +23,39 @@ def lecture_gyro():
             # Afficher les valeurs converties
             #print("ax:", ax, "ay:", ay, "az:", az, "gx:", gx, "gy:", gy, "gz:", gz)
             time.sleep(0.1)
-            return (ax, ay, az, gx, gy, gz)
+            return ax, ay, az, gx, gy, gz
         except ValueError:
             print("Erreur de conversion en float")
     else:
         print("Erreur: la ligne ne contient pas 6 valeurs")
+
+# Fonction pour calculer la position et la direction du robot avec les données du gyroscope
+def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=1):
+    x_gyro = 0.5*ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
+    y_gyro = 0.5*ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
+    print("y_gyro = ", y_gyro)
+    rotation = gz*dt     # calculer la rotation du robot en radians
+    print("rotation = ", rotation)
+    new_angle = angle_prec + rotation    # calculer la direction robot dans le repère global
+    print("new_angle =", new_angle)
+    new_x = x_prec + (x_gyro*math.cos(rotation) - y_gyro*math.sin(rotation))   # calculer la valeur de x dans le repère global
+    new_y = y_prec + (x_gyro*math.sin(rotation) + y_gyro*math.cos(rotation))   # calculer la valeur de y dans le repère global
+    print(new_x, new_y, new_angle)
+    return new_x, new_y, new_angle
     
+
+x_prec = 0
+y_prec = 0
+angle_prec = math.pi/2
+
+for i in range(10) :
+    x_prec, y_prec, angle_prec = calculer_position(x_prec, y_prec, angle_prec, 1, 1, 0, 0, 0, 0)
+
+""" 
 time.sleep(10)
 while True:
-    time.sleep(0.001)
-    print(lecture_gyro())
+    time.sleep(0.1)
+    #print(lecture_gyro())
     ax, ay, az, gx, gy, gz = lecture_gyro()
-    x_prec = 0
-    y_prec = 0
-    angle_prec = math.pi/2
-
-    # Fonction pour calculer la position du robot avec les données du gyroscope
-    def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=0.01):
-        x_gyro = ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
-        y_gyro = ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
-        alpha = 0.49        # facteur d'interpolation, qui donne plus de poids au gyroscope qu'à l'accéléromètre
-        angle_gyro = alpha*(math.pi/2+gx*dt) + alpha*(math.pi/2+gy*dt) + (1-2*alpha)*(math.atan(y_gyro/x_gyro))        # calculer l'angle du robot dans le repère du gyroscope par une moyenne pondérée des différentes méthodes possibles
-        distance = (x_gyro**2 + y_gyro**2)**0.5  # calculer la distance parcourue par le robot
-        angle = round(angle_prec + angle_gyro - (math.pi/2), 2)     # calculer l'angle du robot dans le repère global
-        new_x = round(x_prec + distance * math.cos(angle))       # calculer la valeur de x dans le repère global
-        new_y = round(y_prec + distance * math.sin(angle))       # calculer la valeur de y dans le repère global
-        return new_x, new_y, angle
-
     print(calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz))
+"""
