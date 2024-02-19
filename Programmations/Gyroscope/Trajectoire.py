@@ -1,5 +1,4 @@
-"""Ce fichier est en cours de développement.
-Il est probable que les fonctions de calcul de la position ne soient pas utiles car codées sous Arduino."""
+"""Il est probable que la fonction de calcul de la position ne soit pas utile car codée sous Arduino."""
 
 import serial
 import time
@@ -53,28 +52,27 @@ def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, vx_pre
 
 
 
-def obtenir_position() :
-     # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_calcul_position
-    line = ser.readline().decode().strip()
+def obtenir_position():
+    while True:
+        # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_calcul_position
+        line = ser.readline().decode().strip()
 
-    # Diviser la ligne en valeurs individuelles
-    values = line.split(',')
+        # Diviser la ligne en valeurs individuelles
+        values = line.split(',')
 
-    # Assurer qu'il y a trois valeurs dans la ligne
-    if len(values) == 3:
-        # Convertir chaque valeur en float
-        try:
-            x = float(values[0])
-            y = float(values[1])
-            angle = float(values[2])
-            # Afficher les valeurs converties
-            print("x:", x, "y:", y, "angle:", angle)
-        except ValueError:
-            print("Erreur de conversion en float")
-    else:
-        print("Erreur: la ligne ne contient pas 3 valeurs")
-    time.sleep(0.1)
-    return x, y, angle
+        # Assurer qu'il y a trois valeurs dans la ligne
+        if len(values) == 3 :
+            if len(values[0].split()) == 4 and len(values[1].split()) == 4 and len(values[2].split()) == 3 :
+                # Convertir chaque valeur en float
+                x = float(values[0].split()[2])
+                y = float(values[1].split()[2])
+                angle = float(values[2].split()[1])
+                return x, y, angle  # Retourner les valeurs si tout est lu correctement
+            else : # Si la ligne n'a pas le format attendu, passer à la prochaine ligne
+                continue
+        else:
+            # Si la ligne n'a pas les trois valeurs attendues, passer à la prochaine ligne
+            continue
 
 
 # Fonction qui calcule un angle au cours d'une rotation (et pas un angle par rapport au repère global)
