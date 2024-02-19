@@ -1,7 +1,8 @@
 import serial
 from BaseDiff import BaseDiff, BaseDiffCalcul
 import time
-from Gyroscope.Trajectoire import lire_gyro, calculer_angle
+from Gyroscope.Trajectoire import lire_gyro, calculer_rotation, obtenir_position, rotation
+import threading
 # Simulation ou connecté à une Arduino
 is_simulation = False
 
@@ -18,12 +19,10 @@ else:
 
 
 # Configuration du port série
-ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série approprié
+ser = serial.Serial('COM4', 115200)  # Remplacez 'COM4' par le port série approprié
 ser.timeout = 1  # Définir le délai de lecture du port série
 
-
-
-dt = 0.01
+dt = 0.1
 v = 600
 liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, arguments)
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 200, 'pasD': 0 }), # 45 °
@@ -31,9 +30,9 @@ liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, ar
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -550, 'pasD': 550}), # Demi tour
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 500, 'pasD': 500 }), # Avancer tout droit
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -600, 'pasD': -600 }), # Reculer tout droit
-     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -400, 'pasD': 400}), # Tourner 
+    (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -400, 'pasD': 400}), # Tourner 
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 600, 'pasD': 600 }), # Avancer tout droit
-     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 250, 'pasD': -250}), # Tourner 
+    (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 250, 'pasD': -250}), # Tourner 
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 600, 'pasD': 600 }), # Avancer tout droit
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -1200, 'pasD': -1200 }), # Reculer tout droit
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -550, 'pasD': 550}), # Demi tour
@@ -43,13 +42,26 @@ liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, ar
 
 # Parcourir la liste des actions
 for action, arguments in liste_actions:
-    if float(arguments['pasG']) < 0 or float(arguments['pasD']) < 0 :     # Si le robot doit effectuer une rotation, on utilise le gyroscope pour mesurer l'angle réaliser et éventuellement l'ajuster
-        action(**arguments)                                               # Appeler la fonction avec les arguments fournis
-        angle_réel = calculer_angle(lire_gyro[3])
-        base_diff.ajuster_angle(v, v, float(arguments['pasG']), float(arguments['pasD']), angle_réel)
+    if float(arguments['pasG']) < 0 or float(arguments['pasD']) < 0 :     # Si le robot doit effectuer une rotation, on utilise le gyroscope pour mesurer l'angle réalisé et éventuellement l'ajuster
+
+        # Créer le thread pour calculer la rotation et le démarrer
+        thread_rotation = threading.Thread(target=calculer_rotation, args=(lire_gyro()[5], 0.1))
+        thread_rotation.start()
+
+        # Créer le thread pour tourner les roues et le démarrer
+        thread_tourner_roues = threading.Thread(target=action, args=(arguments,))
+        thread_tourner_roues.start()
+
+        # Attendre que le thread de tourner_roues se termine
+        thread_tourner_roues.join()
+
+        # Ajuster la rotation des roues à partir de l'erreur détectée par le gyroscope
+        base_diff.ajuster_angle(v, v, float(arguments['pasG']), float(arguments['pasD']), rotation)
 
     else :
         action(**arguments)  # Appeler la fonction avec les arguments fournis
-        # position_gyro = calculer_position(angle_gyro, x_prev, y_prev)
-        # base_diff.ajuster_position(v, v, position_gyro)
+        position_gyro = obtenir_position()  # position_gyro = (x, y, angle)
+        base_diff.ajuster_position(v, v, position_gyro)
     time.sleep(0.5)  # Attente pour éviter d'envoyer des commandes trop rapidement
+
+

@@ -1,3 +1,6 @@
+"""Ce fichier est en cours de développement.
+Il est probable que les fonctions de calcul de la position ne soient pas utiles car codées sous Arduino."""
+
 import serial
 import time
 import math
@@ -8,7 +11,7 @@ ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série appro
 ser.timeout = 0.1  # Définir le délai de lecture du port série
 
 def lire_gyro():
-    # Lire une ligne de données sérialisées depuis Arduino
+    # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_valeurs
     line = ser.readline().decode().strip()
 
     # Diviser la ligne en valeurs individuelles
@@ -35,42 +38,51 @@ def lire_gyro():
 
 
 
-# Fonction pour calculer la position et la direction du robot avec les données du gyroscope
-def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=1):
-    x_gyro = 0.5*ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
-    y_gyro = 0.5*ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
+def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, vx_prec, vy_prec, dt=1):
+    """ Fonction qui calcule la position et la direction du robot avec les données du gyroscope
+        Même programme que "gyroscope_calcul_position" écrit en C++. """
+    vx = 0.5*(ax*dt + vx_prec)
+    vy = 0.5*(ay*dt + vy_prec)
+    x_gyro = vx*dt*1000    # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
+    y_gyro = vy*dt*1000    # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
     rotation = gz*dt     # calculer la rotation du robot en radians
     new_angle = angle_prec + rotation    # calculer la direction robot dans le repère global
-    new_x = x_prec + (x_gyro*math.cos(rotation) - y_gyro*math.sin(rotation))   # calculer la valeur de x dans le repère global
-    new_y = y_prec + (x_gyro*math.sin(rotation) + y_gyro*math.cos(rotation))   # calculer la valeur de y dans le repère global
-    print(new_x, new_y, new_angle)
+    new_x = x_prec + (x_gyro*math.cos(new_angle) - y_gyro*math.sin(new_angle))   # calculer la valeur de x dans le repère global
+    new_y = y_prec + (x_gyro*math.sin(new_angle) + y_gyro*math.cos(new_angle))   # calculer la valeur de y dans le repère global
     return new_x, new_y, new_angle
 
-# Fonction qui met à jour la position du robot au fil du temps dans le repère global avec les données du gyroscope
-def start_position() :
-    x, y, angle = 0, 0, math.pi/2
 
-    # Démarrage de la mise à jour de la position du robot dans un thread séparé
-    import threading
-    update_thread = threading.Thread(target=update_position, args=(x, y, angle))
-    update_thread.start()
 
-def update_position(x,y,angle) : 
-    while True :
-        x, y, angle = calculer_position(x, y, angle, lire_gyro())
-        time.sleep(1)
+def obtenir_position() :
+     # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_calcul_position
+    line = ser.readline().decode().strip()
 
-# Obtention de la position actuelle du robot
-def obtenir_position():
-    global x, y, angle
+    # Diviser la ligne en valeurs individuelles
+    values = line.split(',')
+
+    # Assurer qu'il y a trois valeurs dans la ligne
+    if len(values) == 3:
+        # Convertir chaque valeur en float
+        try:
+            x = float(values[0])
+            y = float(values[1])
+            angle = float(values[2])
+            # Afficher les valeurs converties
+            print("x:", x, "y:", y, "angle:", angle)
+        except ValueError:
+            print("Erreur de conversion en float")
+    else:
+        print("Erreur: la ligne ne contient pas 3 valeurs")
+    time.sleep(0.1)
     return x, y, angle
 
 
 # Fonction qui calcule un angle au cours d'une rotation (et pas un angle par rapport au repère global)
-def calculer_angle(gx, dt) :
-        angle = 0
-        while abs(gx) > 0.1 : # tant que le robot tourne, on incrémente la valeur de l'angle
-            angle+= gx*dt
-            time.sleep(dt)
-            gx = lecture_gyro[3]
-        return angle
+rotation = None
+def calculer_rotation(gz, dt) :
+    global rotation 
+    rotation = 0
+    while abs(gz)>0.1 : # tant que le robot tourne, on incrémente la valeur de l'angle
+        gz = lire_gyro()[5]
+        rotation+= gz*dt    # Stocker la valeur finale de l'angle dans une variable globale
+        time.sleep(dt)

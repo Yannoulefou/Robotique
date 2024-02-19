@@ -1,61 +1,41 @@
-import serial
+"""Test du module threading qui permet de faire touner plusieurs fonction en même temps"""
+import threading
 import time
-import math
-"""
-# Configuration du port série
-ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série approprié
-ser.timeout = 0.1  # Définir le délai de lecture du port série
-"""
-def lecture_gyro():
-    # Lire une ligne de données sérialisées depuis Arduino
-    line = ser.readline().decode()
-    values = line.split(',')
-    # Assurer qu'il y a six valeurs dans la ligne
-    if len(values) == 6:
-        # Convertir chaque valeur en float
-        try:
-            ax = float(values[0])
-            ay = float(values[1])
-            az = float(values[2])
-            gx = float(values[3])
-            gy = float(values[4])
-            gz = float(values[5])
-            # Afficher les valeurs converties
-            #print("ax:", ax, "ay:", ay, "az:", az, "gx:", gx, "gy:", gy, "gz:", gz)
-            time.sleep(0.1)
-            return ax, ay, az, gx, gy, gz
-        except ValueError:
-            print("Erreur de conversion en float")
-    else:
-        print("Erreur: la ligne ne contient pas 6 valeurs")
 
-# Fonction pour calculer la position et la direction du robot avec les données du gyroscope
-def calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz, dt=1):
-    x_gyro = 0.5*ax*1000*(dt**2)     # calculer la valeur de x dans le repère du gyroscope (on passe en mm)
-    y_gyro = 0.5*ay*1000*(dt**2)     # calculer la valeur de y dans le repère du gyroscope (on passe en mm)
-    print("y_gyro = ", y_gyro)
-    rotation = gz*dt     # calculer la rotation du robot en radians
-    print("rotation = ", rotation)
-    new_angle = angle_prec + rotation    # calculer la direction robot dans le repère global
-    print("new_angle =", new_angle)
-    new_x = x_prec + (x_gyro*math.cos(rotation) - y_gyro*math.sin(rotation))   # calculer la valeur de x dans le repère global
-    new_y = y_prec + (x_gyro*math.sin(rotation) + y_gyro*math.cos(rotation))   # calculer la valeur de y dans le repère global
-    print(new_x, new_y, new_angle)
-    return new_x, new_y, new_angle
-    
+# On crée des fonctions de test, qui marchent sans connexion à l'Arduino
 
-x_prec = 0
-y_prec = 0
-angle_prec = math.pi/2
+# Variable partagée pour indiquer si la fonction action est terminée
+action_termine = threading.Event()
 
-for i in range(10) :
-    x_prec, y_prec, angle_prec = calculer_position(x_prec, y_prec, angle_prec, 1, 1, 0, 0, 0, 0)
+# Variable partagée pour stocker la valeur finale de l'angle
+angle = None
 
-""" 
-time.sleep(10)
-while True:
-    time.sleep(0.1)
-    #print(lecture_gyro())
-    ax, ay, az, gx, gy, gz = lecture_gyro()
-    print(calculer_position(x_prec, y_prec, angle_prec, ax, ay, az, gx, gy, gz))
-"""
+# Fonction de test 1
+def angle(arg) :
+    global angle
+    angle = 0
+    while not action_termine.is_set():  # Boucler tant que la fonction action n'est pas terminée
+        print("angle", angle)
+        angle += 1
+        time.sleep(arg)
+
+# Fonction de test 2
+def action(arg) :
+    for i in range(5) :
+        print("action", i)
+        time.sleep(arg)
+    action_termine.set()  # Indiquer que la fonction angle est terminée
+
+# Créer le thread pour angle et le démarrer
+thread_angle = threading.Thread(target=angle, args=(0.5,))
+thread_angle.start()
+
+# Créer le thread pour action et le démarrer
+thread_action = threading.Thread(target=action, args=(0.5,))
+thread_action.start()
+
+# Attendre que le thread d'action se termine
+thread_action.join()
+
+# Après que le thread d'action s'est terminé, récupérer la valeur finale de l'angle
+print("Valeur finale de l'angle :", angle)

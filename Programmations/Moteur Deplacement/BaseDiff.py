@@ -145,7 +145,7 @@ class BaseDiff(BaseDiffCalcul):
         Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle = (x, y, angle)
         Attention : les données sont très fausses pour le moment
         """
-        if BaseDiffCalcul.x - position_réelle[0] > 30 or BaseDiffCalcul.y - position_réelle[1] > 30 or position_réelle[2] > 0.2 :
+        if BaseDiffCalcul.x - position_réelle[0] > 30 or BaseDiffCalcul.y - position_réelle[1] > 30 or position_réelle[2] > 0.2 :   # les seuils sont arbitraires
             pas_tourner, pas_avancer = BaseDiffCalcul.move_to_position(position_réelle[0], position_réelle[1], BaseDiffCalcul.x, Base.y)
             self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
             self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
