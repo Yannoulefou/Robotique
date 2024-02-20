@@ -4,9 +4,10 @@
 #include <math.h>
 
 #define DT 0.1  // Temps écoulé depuis la dernière lecture (en secondes)
+#define angle_init PI/2
 float x = 0.0;  // Position initiale en x
 float y = 0.0;  // Position initiale en y
-float angle = PI/2;  // Angle initial
+float angle = angle_init;  // Angle initial
 float vx = 0.0;   // Vitesse initiale en x
 float vy = 0.0;   // Vitesse initiale en y
 
@@ -25,6 +26,7 @@ void setup() {
   while (!Serial) {
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
   }
+Serial.println("Try to initialize!");
 
   // Try to initialize!
   if (!mpu.begin()) {
@@ -34,6 +36,12 @@ void setup() {
     }
   }
   Serial.println("IMU initialisée !");
+  mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
+  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  Serial.println("");
+  delay(100);
+ 
   
   float somme_err_ax = 0.0;
   float somme_err_ay = 0.0;
@@ -115,8 +123,8 @@ float* calculer_position(float x_prec, float y_prec, float angle_prec, float ax,
     float y_gyro = vy*DT;
     float rotation = gz*DT;
     float new_angle = angle_prec + rotation;
-    float new_x = x_prec + (x_gyro*cos(new_angle) - y_gyro*sin(new_angle));
-    float new_y = y_prec + (x_gyro*sin(new_angle) + y_gyro*cos(new_angle));
+    float new_x = x_prec + (x_gyro*cos(new_angle - angle_init) - y_gyro*sin(new_angle - angle_init));
+    float new_y = y_prec + (x_gyro*sin(new_angle - angle_init) + y_gyro*cos(new_angle - angle_init));
 
     // Stocker les valeurs de position dans le tableau
     nouvelle_position[0] = new_x;
