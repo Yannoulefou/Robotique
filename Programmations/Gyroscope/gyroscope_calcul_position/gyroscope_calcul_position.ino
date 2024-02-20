@@ -4,10 +4,9 @@
 #include <math.h>
 
 #define DT 0.1  // Temps écoulé depuis la dernière lecture (en secondes)
-#define angle_init PI/2
 float x = 0.0;  // Position initiale en x
 float y = 0.0;  // Position initiale en y
-float angle = angle_init;  // Angle initial
+float angle = PI/2;  // Angle initial
 float vx = 0.0;   // Vitesse initiale en x
 float vy = 0.0;   // Vitesse initiale en y
 
@@ -123,8 +122,8 @@ float* calculer_position(float x_prec, float y_prec, float angle_prec, float ax,
     float y_gyro = vy*DT;
     float rotation = gz*DT;
     float new_angle = angle_prec + rotation;
-    float new_x = x_prec + (x_gyro*cos(new_angle - angle_init) - y_gyro*sin(new_angle - angle_init));
-    float new_y = y_prec + (x_gyro*sin(new_angle - angle_init) + y_gyro*cos(new_angle - angle_init));
+    float new_x = x_prec + (x_gyro*cos(new_angle - PI/2) - y_gyro*sin(new_angle - PI/2));
+    float new_y = y_prec + (x_gyro*sin(new_angle - PI/2) + y_gyro*cos(new_angle - PI/2));
 
     // Stocker les valeurs de position dans le tableau
     nouvelle_position[0] = new_x;
