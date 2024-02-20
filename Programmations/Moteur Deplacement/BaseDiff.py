@@ -71,27 +71,54 @@ class BaseDiffCalcul:
         self.calculer_position(vitesseG, vitesseD, pasG, pasD)
 
 
-    def move_to_position(self, x_actuel, y_actuel, x_voulu, y_voulu):
+    def move_to_position(self, x_actuel, y_actuel, angle_actuel, x_voulu, y_voulu, angle_voulu):
         """
         Calculer le nombre de pas nécessaire pour que le robot aille d'une position (x,y) actuelle
         à une position (x,y) souhaitée
-        On procède en 2 étapes : calcul des pas de chaque moteur pour que le robot s'oriente dans la bonne direction,
-        puis calcul des pas de chaque moteur pour qu'il avance jusqu'aux positions voulues.
+        On procède en 3 étapes :
+        1) calcul des pas de chaque moteur pour que le robot s'oriente vers les positions voulues,
+        2) calcul des pas de chaque moteur pour qu'il avance jusqu'aux positions voulues,
+        3) calcul des pas de chaque moteur pour qu'il se remette dans l'axe
         """
         # Calculer la distance et l'angle entre les positions actuelles et souhaitées
         dx = x_voulu - x_actuel
         dy = y_voulu - y_actuel
         distance = math.sqrt(dx**2 + dy**2)
-        angle = math.atan2(dy, dx)  # Calcul de l'angle en radians
+        angle1 = math.pi/2 - angle_voulu - math.atan2(dx, dy)
+        angle2 = -(math.pi/2 - angle_actuel - math.atan2(dx, dy))
 
         # Calculer la rotation nécessaire pour orienter le robot vers la position souhaitée
-        pas_tourner = angle * 550 / (2 * math.pi)  # 550 : tâtonné
+        pas_tourner = angle1 * 550 / (2 * math.pi)  # 550 pas : tâtonné
 
         # Convertir la distance en pas pour chaque roue
         pas_avancer = (distance * self.STEPS) / (2 * math.pi * self.RAYON)
 
-        # Renvoyer les valeurs de pas pour la rotation et pour la ligne droite
-        return pas_tourner, pas_avancer
+        # Calculer la rotation nécessaire pour orienter le robot dans l'axe qu'il aurait dû avoir
+        pas_orienter = angle2 * 550 / (2 * math.pi)  # 550 pas : tâtonné
+
+        # Renvoyer les valeurs de pas pour la première rotation, la ligne droite et la deuxième rotation
+        return pas_tourner, pas_avancer, pas_orienter
+    
+    def ajuster_position(self, vitesseG, vitesseD, position_réelle) :
+        """
+        Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle = (x, y, angle)
+        Problème : il faudrait remettre le robot dans l'axe, à la fin, ce qui prend du temps
+        """
+        if self.x - position_réelle[0] > 30 or self.y - position_réelle[1] > 30 :   # les seuils sont arbitraires
+            pas_tourner, pas_avancer, pas_orienter = self.move_to_position(position_réelle[0], position_réelle[1], position_réelle[2] self.x, self.y, self.angle)
+            self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
+            self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
+            self.move(vitesseG, vitesseD, pas_orienter, -pas_orienter)
+
+    def ajuster_angle(self, vitesseG, vitesseD, pasG, pasD, angle_réel) :
+        """
+        Après une rotation, le robot corrige sa direction grâce aux données du gyroscope reçues dans angle_réel
+        """
+        angle_voulu = (2*math.pi*pasD)/550  # pasG = 550 et pasD = -550 : pas pour tourner de 360° (tâtonné)
+        erreur = angle_voulu - angle_réel
+        if abs(erreur) > 0.2 :  # 0.2 est arbitraire, à calibrer
+            pas_corr_D = erreur * 550 / (2*math.pi)
+            self.move(vitesseG, vitesseD, -pas_corr_D, pas_corr_D)
 
 
 class BaseDiff(BaseDiffCalcul):
@@ -145,10 +172,11 @@ class BaseDiff(BaseDiffCalcul):
         Le robot corrige sa position grâce aux données du gyroscope reçues dans position_réelle = (x, y, angle)
         Attention : les données sont très fausses pour le moment
         """
-        if BaseDiffCalcul.x - position_réelle[0] > 30 or BaseDiffCalcul.y - position_réelle[1] > 30 or position_réelle[2] > 0.2 :   # les seuils sont arbitraires
-            pas_tourner, pas_avancer = BaseDiffCalcul.move_to_position(position_réelle[0], position_réelle[1], BaseDiffCalcul.x, Base.y)
+        if abs(BaseDiffCalcul.x - position_réelle[0]) > 30 or abs(BaseDiffCalcul.y - position_réelle[1]) > 30 :   # les seuils sont arbitraires
+            pas_tourner, pas_avancer, pas_orienter = BaseDiffCalcul.move_to_position(position_réelle[0], position_réelle[1],position_réelle[2], BaseDiffCalcul.x, BaseDiffCalcul.y, BaseDiffCalcul.angle)
             self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
             self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
+            self.move(vitesseG, vitesseD, pas_orienter, -pas_orienter)
 
     def ajuster_angle(self, vitesseG, vitesseD, pasG, pasD, angle_réel) :
         """

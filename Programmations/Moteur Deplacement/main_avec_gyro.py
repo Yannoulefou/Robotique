@@ -4,7 +4,7 @@ import time
 from Gyroscope.Trajectoire import lire_gyro, calculer_rotation, obtenir_position, rotation
 import threading
 # Simulation ou connecté à une Arduino
-is_simulation = False
+is_simulation = True
 
 if is_simulation:
     base_diff = BaseDiffCalcul(x=225, y=225, angle=0)
@@ -38,6 +38,17 @@ liste_actions = [ # Liste des actions à effectuer dans un couple (fonctions, ar
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': -550, 'pasD': 550}), # Demi tour
     (base_diff.move, {'vitesseG': v, 'vitesseD': v, 'pasG': 700, 'pasD': 700 }), # Avancer tout droit
 ]
+
+
+# Fonction qui calcule un angle au cours d'une rotation (et pas un angle par rapport au repère global)
+rotation = None
+def calculer_rotation(gz, dt) :
+    global rotation 
+    rotation = 0
+    while abs(gz)>0.1 : # tant que le robot tourne, on incrémente la valeur de l'angle
+        gz = lire_gyro()[5]
+        rotation+= gz*dt    # Stocker la valeur finale de l'angle dans une variable globale
+        time.sleep(dt)
 
 
 # Parcourir la liste des actions
