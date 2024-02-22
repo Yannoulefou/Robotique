@@ -25,7 +25,7 @@ void setup() {
   while (!Serial) {
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
   }
-Serial.println("Try to initialize!");
+Serial.println("Try to initialize !");
 
   // Try to initialize!
   if (!mpu.begin()) {
