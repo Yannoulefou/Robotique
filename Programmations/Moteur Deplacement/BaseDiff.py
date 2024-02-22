@@ -10,7 +10,7 @@ class BaseDiffCalcul:
     et à effectuer des simulations en l'absence de la carte Arduino
     """
  
-    RAYON = 750 # Rayon de la roue en mm
+    RAYON = 37.5 # Rayon de la roue en mm
     LARGEUR = 350 # Largeur de l'essieu en mm
     LONGUEUR = 250 # Longueur du robot en mm
 

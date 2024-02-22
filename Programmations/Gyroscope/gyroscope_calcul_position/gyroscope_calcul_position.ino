@@ -3,7 +3,7 @@
 #include <Adafruit_Sensor.h>
 #include <math.h>
 
-#define DT 0.1  // Temps écoulé depuis la dernière lecture (en secondes)
+#define DT 0.5  // Temps écoulé depuis la dernière lecture (en secondes)
 float x = 0.0;  // Position initiale en x
 float y = 0.0;  // Position initiale en y
 float angle = PI/2;  // Angle initial
@@ -35,13 +35,13 @@ Serial.println("Try to initialize !");
     }
   }
   Serial.println("IMU initialisée !");
+
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
   Serial.println("");
   delay(100);
  
-  
   float somme_err_ax = 0.0;
   float somme_err_ay = 0.0;
   float somme_err_gz = 0.0;
@@ -52,7 +52,7 @@ Serial.println("Try to initialize !");
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
 
-    // Calcul des valeurs d'accélération et rotation (en mm/s²)
+    // Calcul des valeurs d'accélération et rotation (en m/s²)
     float erreur_ax = a.acceleration.x;
     float erreur_ay = a.acceleration.y;
     float erreur_gz = g.gyro.z;
@@ -72,20 +72,52 @@ Serial.println("Try to initialize !");
 
 void loop() {
 
+  const int nb_rep = 50;
+  float somme_ax = 0.0;
+  float somme_ay = 0.0;
+  float somme_gz = 0.0;
+  float moy_ax = 0.0;
+  float moy_ay = 0.0;
+  float moy_gz = 0.0;
+  float ax = 0.0;
+  float ay = 0.0;
+  float gz = 0.0;
+
+  for (int i = 0; i < nb_rep; i++) {
+    // Lecture des données du gyroscope
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+
+    // Calcul des valeurs d'accélération et rotation (en m/s²)
+    ax = a.acceleration.x;
+    ay = a.acceleration.y;
+    gz = g.gyro.z;
+
+    somme_ax += ax;
+    somme_ay += ay;
+    somme_gz += gz;
+
+    delay(1000*DT/nb_rep);
+  }
+
+  moy_ax = somme_ax / nb_rep;
+  moy_ay = somme_ay / nb_rep;
+  moy_gz = somme_gz / nb_rep;
+
   // Lecture des données du gyroscope
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+  // sensors_event_t a, g, temp;
+  // mpu.getEvent(&a, &g, &temp);
 
   // Calcul des valeurs d'accélération et rotation (en mm/s² et rad/s)
-  float ax = (a.acceleration.x-moy_err_ax)*1000;
-  float ay = (a.acceleration.y-moy_err_ay)*1000;
-  float gz = g.gyro.z-moy_err_gz;
+  ax = (moy_ax-moy_err_ax)*1000;
+  ay = (moy_ay-moy_err_ay)*1000;
+  gz = moy_gz-moy_err_gz;
 
   // Tableau pour stocker la nouvelle position
   float* nouvelle_position;
 
   // Calculer la position du robot
-  nouvelle_position = calculer_position(x, y, angle, ax, ax, gz, vx, vy);
+  nouvelle_position = calculer_position(x, y, angle, ax, ay, gz, vx, vy);
   
   // Mettre à jour les valeurs de position
   x = nouvelle_position[0];
@@ -107,7 +139,7 @@ void loop() {
   Serial.println(" degrés");
   
   // Pause pour permettre à l'IMU de récupérer de nouvelles données
-  delay(1000*DT);
+  // delay(1000*DT);
 }
 
 
@@ -116,10 +148,22 @@ float* calculer_position(float x_prec, float y_prec, float angle_prec, float ax,
     float* nouvelle_position = new float[5];
 
     // Calcul des valeurs de position
-    float vx = 0.5*(ax*DT + vx_prec + vx_prec);
-    float vy = 0.5*(ay*DT + vy_prec + vy_prec);
+    float vx = 0.5*ax*DT + vx_prec;
+    float vy = 0.5*ay*DT + vy_prec;
+    Serial.print("ax :");
+    Serial.print(ax);
+    Serial.print("   ay :");
+    Serial.println(ay);
+    Serial.print("vx :");
+    Serial.print(vx);
+    Serial.print("   vy :");
+    Serial.println(vy);
     float x_gyro = vx*DT;
     float y_gyro = vy*DT;
+    Serial.print("x_gyro :");
+    Serial.print(x_gyro);
+    Serial.print("   y_gyro :");
+    Serial.println(y_gyro); 
     float rotation = gz*DT;
     float new_angle = angle_prec + rotation;
     float new_x = x_prec + (x_gyro*cos(new_angle - PI/2) - y_gyro*sin(new_angle - PI/2));
