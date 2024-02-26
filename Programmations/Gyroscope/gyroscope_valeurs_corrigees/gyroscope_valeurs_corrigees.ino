@@ -26,13 +26,19 @@ void setup() {
       delay(10);
     }
   }
+  mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
+  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  Serial.println("");
+  delay(100);
+
   float somme_err_ax = 0.0;
   float somme_err_ay = 0.0;
   float somme_err_az = 0.0;
   float somme_err_gx = 0.0;
   float somme_err_gy = 0.0;
   float somme_err_gz = 0.0;
-  const int nombre_valeurs = 200;
+  const int nombre_valeurs = 2000;
 
   for (int i = 0; i < nombre_valeurs; i++) {
     // Lecture des données du gyroscope
@@ -54,7 +60,7 @@ void setup() {
     somme_err_gy += erreur_gy;
     somme_err_gz += erreur_gz;
 
-    delay(20);
+    delay(1);
   }
 
   // Calcul de la moyenne
@@ -70,7 +76,7 @@ void setup() {
 
 void loop() {
 
-  const int nb_rep = 50;
+  const int nb_rep = 100;
   float somme_ax = 0.0;
   float somme_ay = 0.0;
   float moy_ax = 0.0;
@@ -90,7 +96,7 @@ void loop() {
     somme_ax += ax;
     somme_ay += ay;
 
-    delay(10);
+    delay(1);
   }
 
   moy_ax = somme_ax / nb_rep;
@@ -101,17 +107,17 @@ void loop() {
 
   /* Print out the values */
   Serial.print((moy_ax-moy_err_ax)*1000);
-  Serial.print(",   ");
+  Serial.print(",");
   Serial.print((moy_ay-moy_err_ay)*1000);
-  Serial.print(",   ");
+  Serial.print(",");
   Serial.print((a.acceleration.z-moy_err_az)*1000);
-  Serial.print(",   ");
+  Serial.print(",");
   Serial.print(g.gyro.x-moy_err_gx);
-  Serial.print(",   ");
+  Serial.print(",");
   Serial.print(g.gyro.y-moy_err_gy);
-  Serial.print(",   ");
+  Serial.print(",");
   Serial.print(g.gyro.z-moy_err_gz);
   Serial.println("");
 
-  //delay(1000);
+  delay(10);
 }

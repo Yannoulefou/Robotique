@@ -10,7 +10,7 @@ ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série appro
 ser.timeout = 0.1  # Définir le délai de lecture du port série
 
 def lire_gyro():
-    # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_valeurs
+    # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_valeurs_corrigees
     line = ser.readline().decode().strip()
 
     # Diviser la ligne en valeurs individuelles

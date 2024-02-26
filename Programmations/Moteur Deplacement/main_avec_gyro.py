@@ -1,7 +1,7 @@
 import serial
 from BaseDiff import BaseDiff, BaseDiffCalcul
 import time
-from Gyroscope.Trajectoire import lire_gyro, calculer_rotation, obtenir_position, rotation
+from Gyroscope.Trajectoire import lire_gyro, calculer_rotation, obtenir_position
 import threading
 # Simulation ou connecté à une Arduino
 is_simulation = True
@@ -19,7 +19,7 @@ else:
 
 
 # Configuration du port série
-ser = serial.Serial('COM4', 115200)  # Remplacez 'COM4' par le port série approprié
+ser = serial.Serial('COM5', 115200)  # Remplacez 'COM4' par le port série approprié
 ser.timeout = 1  # Définir le délai de lecture du port série
 
 dt = 0.1

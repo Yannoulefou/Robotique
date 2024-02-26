@@ -3,7 +3,7 @@
 #include <Adafruit_Sensor.h>
 #include <math.h>
 
-#define DT 0.5  // Temps écoulé depuis la dernière lecture (en secondes)
+#define DT 0.2  // Temps écoulé depuis la dernière lecture du gyroscope (en secondes)
 float x = 0.0;  // Position initiale en x
 float y = 0.0;  // Position initiale en y
 float angle = PI/2;  // Angle initial
@@ -36,7 +36,7 @@ Serial.println("Try to initialize !");
   }
   Serial.println("IMU initialisée !");
 
-  mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
+  mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
   Serial.println("");
@@ -45,7 +45,7 @@ Serial.println("Try to initialize !");
   float somme_err_ax = 0.0;
   float somme_err_ay = 0.0;
   float somme_err_gz = 0.0;
-  const int nombre_valeurs = 100;
+  const int nombre_valeurs = 2000;
 
   for (int i = 0; i < nombre_valeurs; i++) {
     // Lecture des données du gyroscope
@@ -61,7 +61,7 @@ Serial.println("Try to initialize !");
     somme_err_ay += erreur_ay;
     somme_err_gz += erreur_gz;
 
-    delay(50);
+    delay(1);
   }
 
   // Calcul de la moyenne
@@ -72,7 +72,7 @@ Serial.println("Try to initialize !");
 
 void loop() {
 
-  const int nb_rep = 50;
+  const int nb_rep = DT*1000;
   float somme_ax = 0.0;
   float somme_ay = 0.0;
   float somme_gz = 0.0;
@@ -97,7 +97,7 @@ void loop() {
     somme_ay += ay;
     somme_gz += gz;
 
-    delay(1000*DT/nb_rep);
+    delay(1);
   }
 
   moy_ax = somme_ax / nb_rep;
