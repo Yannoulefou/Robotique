@@ -47,14 +47,14 @@ void loop() {
     line = false;
 
     } else {
-    turn(PI/2, -1);
+    turn(PI/2);
     line = true;
 
     }
 
   }
   
-  // Pause execution for 1 second (1000 milliseconds)
+  // Run motor
   stepper_L.run();
   stepper_R.run();
 
@@ -62,7 +62,7 @@ void loop() {
 
 
 
-void turn(float angle, int left) { 
+void turn(float angle) { 
   // left = +-1, si = +1, alors le moteur gauche recule et le droit avance pour tourner à gauche
 
   // Calcul du nombre de pas à effectuer
@@ -71,8 +71,8 @@ void turn(float angle, int left) {
   Serial.println(stepper_L.currentPosition());
   Serial.println(stepper_R.currentPosition());
   // Move both stepper motors simultaneously
-    stepper_L.moveTo(stepper_L.currentPosition() + left * steps);
-    stepper_R.moveTo(stepper_R.currentPosition() - left * steps);
+    stepper_L.moveTo(stepper_L.currentPosition() + steps);
+    stepper_R.moveTo(stepper_R.currentPosition() - steps);
 }
 
 
