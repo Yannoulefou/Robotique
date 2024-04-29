@@ -1,6 +1,8 @@
+#include <Adafruit_MPU6050.h>
+
 #define STEP_PIN 2
-#define DIR_PIN 3
-#define ENABLE_PIN 4
+#define DIR_PIN 5
+#define ENABLE_PIN 8
 
 void setup() {
   pinMode(STEP_PIN, OUTPUT);
