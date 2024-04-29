@@ -28,10 +28,9 @@ AccelStepper stepper_L(1, 2, 5);  // 1=using_controller, pull, dir
 AccelStepper stepper_R(1, 3, 6);
 
 // Pour le gyroscope
-
-# define DT 0.1
 unsigned long previousMillis = 0; // Temps du dernier update rotation
 float mean_err_gz = 0.0;
+float angle_gyro = 0.0;
 
 // Initialisation de l'objet MPU6050
 Adafruit_MPU6050 mpu;
@@ -93,15 +92,18 @@ void loop() {
   unsigned long currentMillis = millis();
 
   // Run motor
-  stepper_L.run();
-  stepper_R.run();
   if (!line) {
-    float delay = currentMillis - previousMillis
-    // Exécute la tâche de rotation toutes les DT millisecondes
-    if (delay >= DT) {
-      compute_angle_gyro(delay);
+    float DT = (currentMillis-previousMillis) / 1000;
+    // Exécute la tâche de rotation toutes les DT secondes
+    if (DT >= 0.1) {
+      compute_angle_gyro(DT);
+      correct_angle(PI/2);
       previousMillis = currentMillis;
   }
+}
+  stepper_L.run();
+  stepper_R.run();
+
 }
 
 
@@ -136,22 +138,24 @@ void compute_error_gyro(){
 }
 
 
-void compute_angle_gyro(delay) {
-  float angle_gyro = 0.0;
+void compute_angle_gyro(float DT) {
+  angle_gyro = 0.0;
   // Lecture des données du gyroscope
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
   // Lecture des données de rotation (en rad/s)
   float gz = g.gyro.z;
-  angle_gyro += (gz-mean_err_gz) * (delay/1000); // Mise à jour de la rotation
+  angle_gyro += (gz-mean_err_gz) * DT; // Mise à jour de la rotation
 
-  // Affichage de la rotation
-  Serial.print(angle_gyro); // Affichage de la rotation
-  Serial.print(" ; ");
-  Serial.println(angle_gyro * 180 / M_PI); // Affichage de la rotation en degrés
+  // Affichage de la rotation en degrés
+  Serial.println(angle_gyro * 180 / M_PI);
 }
 
+void correct_angle(float angle) {
+  float err_angle = (angle * 180 / M_PI) - angle_gyro;
+  if (abs(err_angle) > 3) {
+    turn(err_angle);
+  }
 
-
-
+}
