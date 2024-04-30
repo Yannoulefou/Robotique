@@ -9,7 +9,7 @@
 
 // Mesures
 const int roue = 76; // diamètre de la roue en mm
-const int essieu = 450; // distance entre les deux roues en mm
+const int essieu = 200; // distance entre les deux roues en mm
 const int xmax = 3000;
 const int ymax = 2000;
 const int pas_par_tour = 200; // nombre de pas à effectuer pour réaliser un tour
@@ -28,7 +28,7 @@ AccelStepper stepper_L(1, 2, 5);  // 1=using_controller, pull, dir
 AccelStepper stepper_R(1, 3, 6);
 
 // Pour le gyroscope
-unsigned long previousMillis = 0; // Temps du dernier update rotation
+unsigned long previousMicros = 0; // Temps du dernier update rotation
 float mean_err_gz = 0.0;
 float angle_gyro = 0.0;
 
@@ -76,6 +76,7 @@ void loop() {
   if (stepper_L.distanceToGo() == 0 && stepper_R.distanceToGo() == 0 ) {
     delay(1000);
     if (line) {
+    Serial.println("new line");
     stepper_L.moveTo(stepper_L.currentPosition() - 400);
     stepper_R.moveTo(stepper_R.currentPosition() - 400);
     line = false;
@@ -83,22 +84,23 @@ void loop() {
     } else {
     compute_error_gyro(); // peut-être à mettre dans la void setup
     turn(PI/2);
+    angle_gyro = 0.0;
     line = true;
 
     }
 
   }
 
-  unsigned long currentMillis = millis();
+  unsigned long currentMicros = micros();
 
   // Run motor
-  if (!line) {
-    float DT = (currentMillis-previousMillis) / 1000;
+  if (line) { 
+    float DT = (currentMicros-previousMicros) / 1000000;
     // Exécute la tâche de rotation toutes les DT secondes
-    if (DT >= 0.1) {
+    if (DT >= 0.01) {
       compute_angle_gyro(DT);
       correct_angle(PI/2);
-      previousMillis = currentMillis;
+      previousMicros = currentMicros;
   }
 }
   stepper_L.run();
@@ -139,7 +141,6 @@ void compute_error_gyro(){
 
 
 void compute_angle_gyro(float DT) {
-  angle_gyro = 0.0;
   // Lecture des données du gyroscope
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -154,7 +155,7 @@ void compute_angle_gyro(float DT) {
 
 void correct_angle(float angle) {
   float err_angle = (angle * 180 / M_PI) - angle_gyro;
-  if (abs(err_angle) > 3) {
+  if (abs(err_angle) > 10) {
     turn(err_angle);
   }
 
