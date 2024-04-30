@@ -18,11 +18,11 @@ void setup() {
   pinMode(enPin, OUTPUT);
   digitalWrite(enPin, LOW);
   // setup Left
-  stepper_L.setMaxSpeed(200.0);
+  stepper_L.setMaxSpeed(400.0);
   stepper_L.setAcceleration(100.0);
   stepper_L.moveTo(300);
   // setup Right
-  stepper_R.setMaxSpeed(200.0);
+  stepper_R.setMaxSpeed(400.0);
   stepper_R.setAcceleration(100.0);
   stepper_R.moveTo(300);
 }

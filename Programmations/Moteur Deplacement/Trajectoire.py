@@ -6,7 +6,7 @@ import math
 
 
 # Configuration du port série
-ser = serial.Serial('COM4', 115200)  # Remplacez 'COM3' par le port série approprié
+ser = serial.Serial('COM5', 115200)  # Remplacez 'COM3' par le port série approprié
 ser.timeout = 0.1  # Définir le délai de lecture du port série
 
 def lire_gyro():
@@ -84,3 +84,5 @@ def calculer_rotation(gz, dt) :
         gz = lire_gyro()[5]
         rotation+= gz*dt    # Stocker la valeur finale de l'angle dans une variable globale
         time.sleep(dt)
+
+ser.close() # Fermer le port série

@@ -9,7 +9,7 @@
 
 // Mesures
 const int roue = 76; // diamètre de la roue en mm
-const int essieu = 200; // distance entre les deux roues en mm
+const int essieu = 203; // distance entre les deux roues en mm (vraie distance : 200, mais ajustée pour que le robot tourne du bon angle)
 const int xmax = 3000;
 const int ymax = 2000;
 const int pas_par_tour = 200; // nombre de pas à effectuer pour réaliser un tour
@@ -43,11 +43,11 @@ void setup() {
   pinMode(enPin, OUTPUT);
   digitalWrite(enPin, LOW);
   // setup Left
-  stepper_L.setMaxSpeed(100.0);
-  stepper_L.setAcceleration(50.0);
+  stepper_L.setMaxSpeed(600.0);
+  stepper_L.setAcceleration(400.0);
   // setup Right
-  stepper_R.setMaxSpeed(100.0);
-  stepper_R.setAcceleration(50.0);
+  stepper_R.setMaxSpeed(600.0);
+  stepper_R.setAcceleration(400.0);
 
   // Initalize serial monitor
   Serial.begin(115200);
@@ -77,12 +77,12 @@ void loop() {
     delay(1000);
     if (line) {
     Serial.println("new line");
-    stepper_L.moveTo(stepper_L.currentPosition() - 400);
-    stepper_R.moveTo(stepper_R.currentPosition() - 400);
+    stepper_L.moveTo(stepper_L.currentPosition() + 800);
+    stepper_R.moveTo(stepper_R.currentPosition() + 800);
     line = false;
 
     } else {
-    compute_error_gyro(); // peut-être à mettre dans la void setup
+    //compute_error_gyro(); // peut-être à mettre dans la void setup
     turn(PI/2);
     angle_gyro = 0.0;
     line = true;
@@ -91,15 +91,15 @@ void loop() {
 
   }
 
-  unsigned long currentMicros = micros();
 
   // Run motor
-  if (line) { 
+  if (line) {
+    unsigned long currentMicros = micros();
     float DT = (currentMicros-previousMicros) / 1000000;
     // Exécute la tâche de rotation toutes les DT secondes
     if (DT >= 0.01) {
       compute_angle_gyro(DT);
-      correct_angle(PI/2);
+      //correct_angle(PI/2);
       previousMicros = currentMicros;
   }
 }
@@ -114,7 +114,7 @@ void turn(float angle) {
   // left = +-1, si = +1, alors le moteur gauche recule et le droit avance pour tourner à gauche
 
   // Calcul du nombre de pas à effectuer
-  long steps = pas_par_tour * (angle / (2*PI)) * (essieu / roue);
+  long steps = (pas_par_tour * angle*essieu) / (2*PI*roue);
   Serial.println("New turn");
   Serial.println(stepper_L.currentPosition());
   Serial.println(stepper_R.currentPosition());
@@ -150,7 +150,11 @@ void compute_angle_gyro(float DT) {
   angle_gyro += (gz-mean_err_gz) * DT; // Mise à jour de la rotation
 
   // Affichage de la rotation en degrés
+  Serial.print("vitesse : ");
+  Serial.print(gz);
+  Serial.print("rad/s ; angle : ");
   Serial.println(angle_gyro * 180 / M_PI);
+
 }
 
 void correct_angle(float angle) {

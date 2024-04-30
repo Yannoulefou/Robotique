@@ -121,3 +121,12 @@ void loop() {
 
   delay(10);
 }
+
+void calculer_rotation(float gz, float dt) {
+  float rotation = 0;
+  while (abs(gz) > 0.1) {
+    gz = lire_gyro()[5];
+    rotation += gz * dt;
+    delay(100); // Attente pour lire à intervalles réguliers
+  }
+}

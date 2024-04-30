@@ -105,7 +105,7 @@ class BaseDiffCalcul:
         Problème : il faudrait remettre le robot dans l'axe, à la fin, ce qui prend du temps
         """
         if self.x - position_réelle[0] > 30 or self.y - position_réelle[1] > 30 :   # les seuils sont arbitraires
-            pas_tourner, pas_avancer, pas_orienter = self.move_to_position(position_réelle[0], position_réelle[1], position_réelle[2] self.x, self.y, self.angle)
+            pas_tourner, pas_avancer, pas_orienter = self.move_to_position(position_réelle[0], position_réelle[1], position_réelle[2], self.x, self.y, self.angle)
             self.move(vitesseG, vitesseD, pas_tourner, - pas_tourner)
             self.move(vitesseG, vitesseD, pas_avancer, pas_avancer)
             self.move(vitesseG, vitesseD, pas_orienter, -pas_orienter)
@@ -187,3 +187,4 @@ class BaseDiff(BaseDiffCalcul):
         if abs(erreur) > 0.2 :  # 0.2 est arbitraire, à calibrer
             pas_corr_D = erreur * 550 / (2*math.pi)
             self.move(vitesseG, vitesseD, -pas_corr_D, pas_corr_D)
+            print("angle corrigé : ", erreur)

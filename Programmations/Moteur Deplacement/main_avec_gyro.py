@@ -1,8 +1,9 @@
 import serial
 from BaseDiff import BaseDiff, BaseDiffCalcul
 import time
-from Gyroscope.Trajectoire import lire_gyro, calculer_rotation, obtenir_position
+from Trajectoire import lire_gyro, calculer_rotation, obtenir_position
 import threading
+
 # Simulation ou connecté à une Arduino
 is_simulation = True
 
@@ -20,7 +21,7 @@ else:
 
 # Configuration du port série
 ser = serial.Serial('COM5', 115200)  # Remplacez 'COM4' par le port série approprié
-ser.timeout = 1  # Définir le délai de lecture du port série
+ser.timeout = 0.1  # Définir le délai de lecture du port série
 
 dt = 0.1
 v = 600
@@ -51,6 +52,33 @@ def calculer_rotation(gz, dt) :
         time.sleep(dt)
 
 
+def lire_gyro():
+    # Lire une ligne de données sérialisées depuis Arduino par le programme gyroscope_valeurs_corrigees
+    line = ser.readline().decode().strip()
+
+    # Diviser la ligne en valeurs individuelles
+    values = line.split(',')
+
+    # Assurer qu'il y a six valeurs dans la ligne
+    if len(values) == 6:
+        # Convertir chaque valeur en float
+        try:
+            ax = float(values[0])
+            ay = float(values[1])
+            az = float(values[2])
+            gx = float(values[3])
+            gy = float(values[4])
+            gz = float(values[5])
+            # Afficher les valeurs converties
+            print("ax:", ax, "ay:", ay, "az:", az, "gx:", gx, "gy:", gy, "gz:", gz)
+        except ValueError:
+            print("Erreur de conversion en float")
+    else:
+        print("Erreur: la ligne ne contient pas 6 valeurs :", values)
+    time.sleep(0.1)
+    return ax, ay, az, gx, gy, gz
+
+
 # Parcourir la liste des actions
 for action, arguments in liste_actions:
     if float(arguments['pasG']) < 0 or float(arguments['pasD']) < 0 :     # Si le robot doit effectuer une rotation, on utilise le gyroscope pour mesurer l'angle réalisé et éventuellement l'ajuster
@@ -71,8 +99,9 @@ for action, arguments in liste_actions:
 
     else :
         action(**arguments)  # Appeler la fonction avec les arguments fournis
-        position_gyro = obtenir_position()  # position_gyro = (x, y, angle)
-        base_diff.ajuster_position(v, v, position_gyro)
+        # position_gyro = obtenir_position()  # position_gyro = (x, y, angle)
+        # base_diff.ajuster_position(v, v, position_gyro)
     time.sleep(0.5)  # Attente pour éviter d'envoyer des commandes trop rapidement
 
 
+ser.close()  # Fermer le port série
