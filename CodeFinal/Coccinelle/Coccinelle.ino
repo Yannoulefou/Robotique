@@ -56,8 +56,8 @@ void setup() {
     delay(500);
 
   }
-  //delay(90000);
-  while(!(nb_if == 8))
+  delay(91000);
+  while(!(nb_if == 10))
   {
     _loop();
     if(ultrasonic_3.distanceCm() > 13){
@@ -66,6 +66,7 @@ void setup() {
       _delay(0.5);
       move(1, 0);
       nb_if += 1;
+
 
     }
 

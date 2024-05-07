@@ -27,6 +27,7 @@ const int enPin = 8; // enable Pin pour allumer le shield
 AccelStepper stepper_L(1, 4, 7);  // 1=using_controller, pull, dir
 AccelStepper stepper_R(1, 3, 6);
 
+
 // Pour les étapes
 int etape = 0;
 unsigned long startTime = 0;
