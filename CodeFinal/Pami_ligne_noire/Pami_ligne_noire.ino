@@ -6,6 +6,8 @@
 #include <Wire.h>
 #include <SoftwareSerial.h>
 
+MeLineFollower linefollower_2(2);
+MeIR ir;
 MeUltrasonicSensor ultrasonic_3(3);
 MeDCMotor motor_9(9);
 MeDCMotor motor_10(10);
@@ -39,7 +41,6 @@ void _delay(float seconds) {
 }
 
 
-
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
@@ -49,13 +50,16 @@ void setup() {
   Serial.println(ultrasonic_3.distanceCm());
   delay(100);
 
-  while(ultrasonic_3.distanceCm() < 5)
-  {
-    Serial.print("distance : ");
-    Serial.println(ultrasonic_3.distanceCm());
-    delay(500);
+  ir.begin();
 
+  while(((0 ? (3 == 0 ? linefollower_2.readSensors() == 0 :
+  (linefollower_2.readSensors() & 3) == 3) :
+  (3 == 0 ? linefollower_2.readSensors() == 3 :
+  (linefollower_2.readSensors() & 3) == 0))))
+  {
+    _loop();
   }
+  Serial.println("pas noire");
   delay(91000); // en millisecondes
   while(!(nb_if == 10))
   {
@@ -72,10 +76,6 @@ void setup() {
 
   }
 
-  // move(1, 50 / 100.0 * 255);
-  // _delay(4);
-  // move(1, 0);
-
 }
 
 void _loop() {
@@ -84,12 +84,3 @@ void _loop() {
 void loop() {
   _loop();
 }
-
-
-
-
-  // Serial.print("distance_hors_while : ");
-  // Serial.println(ultrasonic_3.distanceCm());
-  // delay(500);
-
-
