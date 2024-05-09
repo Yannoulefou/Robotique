@@ -20,7 +20,7 @@ const int pas_par_tour = 200; // nombre de pas à effectuer pour réaliser un to
 STEP, DIR
 X : 2, 5 (Left)
 Y: 3, 6 (Right)
-Z: 4, 7
+Z: 4, 7 (Left)
 */
 
 const int enPin = 8; // enable Pin pour allumer le shield
@@ -37,6 +37,8 @@ unsigned long startTime = 0;
 #define ECHO_PIN 2
 HC_SR04<ECHO_PIN> sensor(TRIG_PIN);   // sensor with echo and trigger pin
 signed long distance;
+unsigned long lastUltra = 0;
+unsigned long ultraTime = 0;
 // unsigned long interval_ultrason;
 
 
@@ -56,6 +58,8 @@ void setup() {
   // Initalize Ultrason
   sensor.beginAsync();  
   sensor.startAsync(100000);        // start first measurement
+  ultraTime=millis();
+  
   // pinMode(TRIG_PIN, OUTPUT);
   // pinMode(ECHO_PIN, INPUT);
   // interval_ultrason = micros();
@@ -68,42 +72,45 @@ void setup() {
 void loop() {
   ultrason_nonbloquant();
   // Pause execution for 1 second (1000 milliseconds)  
-  if (stepper_L.distanceToGo() == 0 && stepper_R.distanceToGo() == 0 ) {
-    Serial.println();
-    Serial.print("Etape : ");
-    Serial.println(etape);
-    if (etape==0) {
-      // Cache Ultrason
+  // Serial.println();
+  // Serial.print("Etape : ");
+  // Serial.println(etape);
+  if (etape==0) {
+    // Cache Ultrason
+    if (millis() - ultraTime > 3000) {
       if (distance != -1 && distance >10) {
         etape = 1;
         startTime=micros();
       }
-    } else if (etape == 1) {
-      // Avancer 1.7m soit 1700 mm
-      avance(2000);
-      etape = 4;
-    } else if (etape == 2) {
-      // Tourner de 45°
-      turn(PI/4);
-      etape = 3;
-    } else if (etape == 3) {
-      // Avancer de 1m
-      avance(1200);
-      etape = 4;
-    } else if (etape == 4) {
-      // Desactivation des moteurs
-      digitalWrite(enPin, HIGH);
     }
+  } else if (etape == 1) {
+    // Avancer 1.7m soit 1700 mm
+    avance(2000);
+    etape = 2;
+  } else if (etape == 2) {
+    // Fini !!
+    if (stepper_L.distanceToGo() == 0 && stepper_R.distanceToGo() == 0 ) {
+      etape = 4;
+    }
+  } else if (etape == 3) {
+    // Avancer de 1m
+    avance(1200);
+    etape = 4;
+  } else if (etape == 4) {
+    // Desactivation des moteurs
+    digitalWrite(enPin, HIGH);
   }
   
   bool run = true;
   if (distance != -1 && distance < 20) {
-    Serial.println("Obstacle detecté");
+    // Serial.println("Obstacle detecté");
     run = false;
   }
-  if (micros()-startTime > 95000000) {// 95secondes
-    run = false;
-    etape = 4;
+  if (startTime != 0) {
+    if (micros()-startTime > 95000000) {// 95secondes
+      run = false;
+      etape = 4;
+    }
   }
   // Run motor
   if (run) {
@@ -159,13 +166,26 @@ void ultrason() {
 
 void ultrason_nonbloquant() {
   if (sensor.isFinished()) {
-    distance = sensor.getDist_cm();
-    if (distance < 2 || distance > 400) {
-      distance = -1;
-    } 
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+    if ((micros()-lastUltra) > 100000) {
+      // On retire cette valeure
+      sensor.getDist_cm();
+
+    } else {distance = sensor.getDist_cm();
+      if (distance < 2) {
+        distance = -1;
+      } 
+      if (distance > 400) {
+        distance = 400;
+      }
+      // Serial.print("Distance: ");
+      // Serial.print(distance);
+      // Serial.println(" cm");
+    }
+    
+  // Serial.print("LastUltra: ");
+  // Serial.print((lastUltra - micros())/1000000);
+  // Serial.println(" ms");
+  lastUltra = micros();
   sensor.startAsync(100000);
   }
 }

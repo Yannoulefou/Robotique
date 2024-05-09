@@ -6,11 +6,11 @@
 STEP, DIR
 X : 2, 5 (Left)
 Y: 3, 6 (Right)
-Z: 4, 7
+Z: 4, 7 (Left)
 */
 
 const int enPin = 8; // enable Pin pour allumer le shield
-AccelStepper stepper_L(1, 2, 5);  // 1=using_controller, pull, dir
+AccelStepper stepper_L(1, 4, 7);  // 1=using_controller, pull, dir
 AccelStepper stepper_R(1, 3, 6);
 
 void setup() {
